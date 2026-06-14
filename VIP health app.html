@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HealthPro</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root {
+  --bg: #050d1a; --bg2: #0d1f35; --card: #0f2540; --card2: #152e4d;
+  --accent: #00d4ff; --accent2: #7c3aed; --gold: #f59e0b;
+  --green: #10b981; --red: #ef4444; --text: #e2e8f0; --text2: #94a3b8;
+  --border: rgba(0,212,255,0.15);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 80px; }
+.header { background: linear-gradient(135deg, #050d1a, #0d1f35); padding: 16px; border-bottom: 1px solid var(--border); }
+.header-top { display: flex; justify-content: space-between; align-items: center; }
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 40px; height: 40px; background: linear-gradient(135deg, var(--accent), var(--accent2)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.logo-text { font-size: 20px; font-weight: 800; }
+.logo-text span { color: var(--accent); }
+.lang-row { display: flex; gap: 4px; background: var(--card); border-radius: 20px; padding: 3px; }
+.lang-btn { padding: 4px 12px; border-radius: 16px; border: none; font-size: 12px; font-weight: 700; cursor: pointer; background: transparent; color: var(--text2); }
+.lang-btn.on { background: var(--accent); color: #000; }
+.header-sub { font-size: 12px; color: var(--text2); margin-top: 6px; }
+.prem-bar { background: linear-gradient(135deg,#1a0a00,#2d1500); border: 1px solid var(--gold); border-radius: 12px; padding: 10px 14px; margin: 12px 14px 0; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+.prem-bar-txt { font-size: 12px; color: var(--gold); font-weight: 600; }
+.prem-bar-sub { font-size: 11px; color: #a16207; margin-top: 2px; }
+.prem-bar-btn { background: var(--gold); color: #000; border: none; border-radius: 8px; padding: 5px 12px; font-size: 11px; font-weight: 800; cursor: pointer; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5,13,26,0.97); border-top: 1px solid var(--border); display: flex; z-index: 100; padding-bottom: env(safe-area-inset-bottom); }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 4px 6px; border: none; background: none; cursor: pointer; font-size: 9px; color: var(--text2); font-weight: 600; gap: 3px; }
+.nav-btn.on { color: var(--accent); }
+.nav-icon { font-size: 20px; line-height: 1; }
+.content { padding: 14px; }
+.page { display: none; }
+.page.on { display: block; }
+.sec-title { font-size: 18px; font-weight: 800; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.sec-title span { color: var(--accent); }
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; margin-bottom: 12px; position: relative; }
+.locked-overlay { position: absolute; inset: 0; background: rgba(5,13,26,0.88); border-radius: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; z-index: 10; }
+.lock-ico { font-size: 32px; }
+.lock-txt { font-size: 13px; color: var(--gold); font-weight: 700; text-align: center; }
+.lock-btn { background: var(--gold); color: #000; border: none; border-radius: 10px; padding: 8px 20px; font-size: 13px; font-weight: 800; cursor: pointer; }
+.igroup { margin-bottom: 12px; }
+.ilbl { font-size: 12px; color: var(--text2); margin-bottom: 6px; font-weight: 600; }
+.ifield { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 15px; outline: none; }
+.iselect { width: 100%; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; color: var(--text); font-size: 15px; outline: none; appearance: none; }
+.btn-blue { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--accent), #0099bb); color: #000; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; margin-top: 4px; }
+.btn-gold { width: 100%; padding: 14px; background: linear-gradient(135deg, var(--gold), #d97706); color: #000; border: none; border-radius: 12px; font-size: 15px; font-weight: 800; cursor: pointer; }
+.res-box { background: var(--bg2); border-radius: 12px; padding: 16px; margin-top: 12px; border: 1px solid var(--border); display: none; }
+.res-box.on { display: block; }
+.res-big { font-size: 36px; font-weight: 900; color: var(--accent); text-align: center; }
+.res-lbl { font-size: 13px; color: var(--text2); text-align: center; }
+.res-status { text-align: center; font-size: 14px; font-weight: 700; margin-top: 8px; padding: 6px 16px; border-radius: 20px; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.g4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+.sbox { background: var(--bg2); border-radius: 12px; padding: 12px; text-align: center; border: 1px solid var(--border); }
+.sval { font-size: 20px; font-weight: 800; }
+.slbl { font-size: 10px; color: var(--text2); margin-top: 2px; }
+.tab-row { display: flex; gap: 6px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+.tab-item { padding: 7px 16px; border-radius: 20px; border: 1px solid var(--border); font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; color: var(--text2); background: var(--card); }
+.tab-item.on { background: var(--accent); color: #000; border-color: var(--accent); }
+.supp-card { background: var(--card2); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
+.supp-hdr { padding: 13px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.supp-ico { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+.supp-nm { font-size: 14px; font-weight: 700; }
+.supp-sb { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.supp-det { padding: 0 14px 14px; display: none; }
+.supp-det.on { display: block; }
+.drow { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+.drow:last-child { border-bottom: none; }
+.dkey { color: var(--text2); }
+.dval { color: var(--text); font-weight: 600; }
+.warn-box { background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); border-radius: 8px; padding: 8px 10px; margin-top: 8px; font-size: 11px; color: #fca5a5; }
+.meal-card { background: var(--card2); border-radius: 14px; border: 1px solid var(--border); margin-bottom: 10px; overflow: hidden; }
+.meal-hdr { padding: 12px 14px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+.meal-time { background: var(--accent); color: #000; border-radius: 8px; padding: 4px 10px; font-size: 12px; font-weight: 800; min-width: 52px; text-align: center; }
+.meal-nm { font-size: 13px; font-weight: 700; }
+.macros { display: flex; gap: 8px; margin-top: 3px; }
+.mac { font-size: 10px; font-weight: 700; }
+.mac.k { color: var(--accent); } .mac.b { color: var(--green); } .mac.j { color: var(--gold); } .mac.u { color: var(--accent2); }
+.meal-det { padding: 0 14px 14px; display: none; }
+.meal-det.on { display: block; }
+.mtable { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+.mtable th { background: var(--bg2); padding: 6px; font-weight: 700; color: var(--text2); }
+.mtable td { padding: 7px 6px; border-bottom: 1px solid var(--border); }
+.mtable tr:last-child td { font-weight: 700; background: var(--bg2); border-bottom: none; }
+.hrow { background: var(--card2); border-radius: 12px; border: 1px solid var(--border); padding: 12px 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+.hdot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.hnm { font-size: 13px; font-weight: 700; }
+.hdesc { font-size: 11px; color: var(--text2); margin-top: 2px; }
+.htime { font-size: 11px; color: var(--accent); font-weight: 600; }
+.step-circ { width: 160px; height: 160px; margin: 0 auto 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; position: relative; }
+.step-inner { width: 130px; height: 130px; background: var(--bg); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.step-num { font-size: 32px; font-weight: 900; color: var(--accent); }
+.step-sub { font-size: 11px; color: var(--text2); }
+.prem-hero { text-align: center; padding: 20px 0; }
+.prem-ico { font-size: 60px; margin-bottom: 12px; }
+.prem-title { font-size: 26px; font-weight: 900; color: var(--gold); margin-bottom: 8px; }
+.prem-sub { font-size: 14px; color: var(--text2); line-height: 1.5; }
+.price-box { background: linear-gradient(135deg,#1a0a00,#2d1500); border: 2px solid var(--gold); border-radius: 20px; padding: 24px; text-align: center; margin: 16px 0; }
+.price-old { font-size: 16px; color: var(--text2); text-decoration: line-through; margin-bottom: 4px; }
+.price-amt { font-size: 42px; font-weight: 900; color: var(--gold); }
+.price-per { font-size: 14px; color: var(--text2); margin-top: 4px; }
+.feat-item { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.feat-item:last-child { border-bottom: none; }
+.feat-chk { color: var(--green); font-size: 16px; }
+.info-box { background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #7dd3fc; margin-top: 10px; line-height: 1.5; }
+.warn2 { background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #fcd34d; margin-top: 10px; line-height: 1.5; }
+.home-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.home-card { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; cursor: pointer; position: relative; overflow: hidden; }
+.home-card-ico { font-size: 28px; margin-bottom: 8px; }
+.home-card-nm { font-size: 13px; font-weight: 700; }
+.home-card-sb { font-size: 10px; color: var(--text2); margin-top: 3px; }
+.pro-tag { position: absolute; top: 8px; right: 8px; background: var(--gold); color: #000; border-radius: 6px; padding: 2px 6px; font-size: 9px; font-weight: 800; }
+.home-row { background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 16px; cursor: pointer; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+.home-row-ico { font-size: 32px; }
+.home-row-nm { font-size: 14px; font-weight: 700; }
+.home-row-sb { font-size: 11px; color: var(--text2); margin-top: 2px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-top">
+    <div class="logo">
+      <div class="logo-icon" onclick="adminTap()" style="cursor:pointer">💪</div>
+      <div class="logo-text">Health<span>Pro</span></div>
+    </div>
+    <div class="lang-row">
+      <button class="lang-btn on" id="lbuz" onclick="setLang('uz')">UZ</button>
+      <button class="lang-btn" id="lbru" onclick="setLang('ru')">RU</button>
+    </div>
+  </div>
+  <div class="header-sub" id="hsub">Sog'liq va vazn boshqaruvi markazi</div>
+</div>
+<div class="prem-bar" id="prembar" onclick="goPage('premium')">
+  <div>
+    <div class="prem-bar-txt" id="pbtxt">Premium — barcha funksiyalar oching</div>
+    <div class="prem-bar-sub" id="pbsub">Oyiga atigi 99,000 som</div>
+  </div>
+  <button class="prem-bar-btn" id="pbbtn">Sotib olish</button>
+</div>
+
+<div class="content">
+
+<!-- HOME -->
+<div class="page on" id="pg-home">
+  <div class="sec-title">🏠 <span>Bosh sahifa</span></div>
+  <div class="home-grid">
+    <div class="home-card" onclick="goPage('bmi')">
+      <div class="home-card-ico">📊</div>
+      <div class="home-card-nm">BMI Hisoblash</div>
+      <div class="home-card-sb">Tana massa indeksi</div>
+    </div>
+    <div class="home-card" onclick="goPage('bju')">
+      <div class="pro-tag">PRO</div>
+      <div class="home-card-ico">🧮</div>
+      <div class="home-card-nm">BJU Kalkulyator</div>
+      <div class="home-card-sb">Kunlik meyor</div>
+    </div>
+    <div class="home-card" onclick="goPage('gormon')">
+      <div class="pro-tag">PRO</div>
+      <div class="home-card-ico">🧪</div>
+      <div class="home-card-nm">Gormon Tahlili</div>
+      <div class="home-card-sb">Qaysilarni tekshirish</div>
+    </div>
+    <div class="home-card" onclick="goPage('qadam')">
+      <div class="pro-tag">PRO</div>
+      <div class="home-card-ico">👣</div>
+      <div class="home-card-nm">Qadam Hisobi</div>
+      <div class="home-card-sb">Kunlik maqsad</div>
+    </div>
+  </div>
+  <div class="home-row" onclick="goPage('ovqat')">
+    <div class="home-row-ico">🥗</div>
+    <div style="flex:1"><div class="home-row-nm">Ovqatlanish Rejimi</div><div class="home-row-sb">Vaqt va kaloriya bilan</div></div>
+    <div class="pro-tag" style="position:static;margin-right:8px">PRO</div>
+    <div style="color:var(--text2)">›</div>
+  </div>
+  <div class="home-row" onclick="goPage('vitamin')">
+    <div class="home-row-ico">💊</div>
+    <div style="flex:1"><div class="home-row-nm">Vitaminlar</div><div class="home-row-sb">Doza va ichish tartibi</div></div>
+    <div class="pro-tag" style="position:static;margin-right:8px">PRO</div>
+    <div style="color:var(--text2)">›</div>
+  </div>
+  <div class="home-row" onclick="goPage('sport')">
+    <div class="home-row-ico">🏋️</div>
+    <div style="flex:1"><div class="home-row-nm">Sport Qoshimchalari</div><div class="home-row-sb">Vazn olish / Yog yoqish</div></div>
+    <div class="pro-tag" style="position:static;margin-right:8px">PRO</div>
+    <div style="color:var(--text2)">›</div>
+  </div>
+</div>
+
+<!-- YOG FOIZI -->
+<div class="page" id="pg-bmi">
+  <div class="sec-title">📊 <span>Yog Foizi Tahlili</span></div>
+  <div class="card">
+    <div class="g2" style="gap:10px;margin-bottom:12px">
+      <div class="igroup" style="margin-bottom:0"><div class="ilbl">Yosh</div><input type="number" class="ifield" id="b-yosh" placeholder="30"></div>
+      <div class="igroup" style="margin-bottom:0"><div class="ilbl">Jins</div>
+        <select class="iselect" id="b-jins" onchange="toggleDumba()">
+          <option value="e">Erkak</option>
+          <option value="a">Ayol</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2" style="gap:10px;margin-bottom:12px">
+      <div class="igroup" style="margin-bottom:0"><div class="ilbl">Vazn (kg)</div><input type="number" class="ifield" id="b-vazn" placeholder="70"></div>
+      <div class="igroup" style="margin-bottom:0"><div class="ilbl">Boy (sm)</div><input type="number" class="ifield" id="b-boy" placeholder="170"></div>
+    </div>
+    <div class="g2" style="gap:10px;margin-bottom:12px">
+      <div class="igroup" style="margin-bottom:0"><div class="ilbl">Bel aylanasi (sm)</div><input type="number" class="ifield" id="b-bel" placeholder="85"></div>
+      <div class="igroup" style="margin-bottom:0"><div class="ilbl">Boyin aylanasi (sm)</div><input type="number" class="ifield" id="b-boyin" placeholder="38"></div>
+    </div>
+    <div class="igroup" id="dumba-group" style="display:none">
+      <div class="ilbl">Dumba aylanasi (sm) — ayollar uchun</div>
+      <input type="number" class="ifield" id="b-dumba" placeholder="95">
+    </div>
+    <button class="btn-blue" onclick="calcYog()">Hisoblash</button>
+
+    <div class="res-box" id="bmi-res">
+      <!-- Main result -->
+      <div style="text-align:center;margin-bottom:16px">
+        <div style="position:relative;width:140px;height:140px;margin:0 auto">
+          <svg width="140" height="140" style="transform:rotate(-90deg)">
+            <circle cx="70" cy="70" r="60" fill="none" stroke="var(--bg2)" stroke-width="12"/>
+            <circle cx="70" cy="70" r="60" fill="none" stroke="var(--accent)" stroke-width="12"
+              stroke-dasharray="377" id="yog-circle" stroke-dashoffset="377" stroke-linecap="round"/>
+          </svg>
+          <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center">
+            <div class="res-big" id="bmi-val" style="font-size:28px">-</div>
+            <div style="font-size:11px;color:var(--text2)">Yog foizi</div>
+          </div>
+        </div>
+        <div class="res-status" id="bmi-st" style="margin-top:8px"></div>
+      </div>
+
+      <!-- Stats grid -->
+      <div class="g2" style="margin-bottom:12px">
+        <div class="sbox"><div class="sval" id="bmr-v" style="color:var(--green);font-size:16px">-</div><div class="slbl">BMR (kkal)</div></div>
+        <div class="sbox"><div class="sval" id="yog-kg" style="color:var(--red);font-size:16px">-</div><div class="slbl">Yog massasi (kg)</div></div>
+      </div>
+      <div class="g2" style="margin-bottom:12px">
+        <div class="sbox"><div class="sval" id="musak-kg" style="color:var(--accent);font-size:16px">-</div><div class="slbl">Musak massasi (kg)</div></div>
+        <div class="sbox"><div class="sval" id="ideal-v" style="color:var(--gold);font-size:14px">-</div><div class="slbl">Ideal vazn</div></div>
+      </div>
+
+      <!-- Yog darajalari -->
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:700">Yog foizi darajalari:</div>
+        <div id="yog-bars"></div>
+      </div>
+
+      <div class="info-box" id="bmi-adv"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BJU -->
+<div class="page" id="pg-bju">
+  <div class="sec-title">🧮 <span>BJU Kalkulyator</span></div>
+  <div class="card" style="position:relative">
+    <div class="locked-overlay" id="bju-lock"><div class="lock-ico">🔒</div><div class="lock-txt">Premium foydalanuvchilar uchun</div><button class="lock-btn" onclick="goPage('premium')">Premium olish</button></div>
+    <div class="igroup"><div class="ilbl">Maqsad</div>
+      <select class="iselect" id="bju-maq" onchange="toggleMaqFields()">
+        <option value="kam">Vazn kamaytirish</option>
+        <option value="ush">Vazn ushlab turish</option>
+        <option value="ol">Vazn olish</option>
+      </select>
+    </div>
+    <div id="maq-fields">
+      <div class="igroup"><div class="ilbl">Maqsad vazn (kg)</div><input type="number" class="ifield" id="bju-mvazn" placeholder="75"></div>
+      <div class="igroup"><div class="ilbl">Muddat</div>
+        <select class="iselect" id="bju-muddat">
+          <option value="1">1 oy</option><option value="2">2 oy</option>
+          <option value="3" selected>3 oy</option><option value="4">4 oy</option>
+          <option value="6">6 oy</option><option value="12">12 oy</option>
+        </select>
+      </div>
+    </div>
+    <div class="igroup"><div class="ilbl">Faollik darajasi</div>
+      <select class="iselect" id="bju-faol">
+        <option value="1.2">Kam harakatli</option>
+        <option value="1.375">Engil faollik</option>
+        <option value="1.55">Ortacha faollik</option>
+        <option value="1.725">Yuqori faollik</option>
+      </select>
+    </div>
+    <button class="btn-blue" onclick="calcBJU()">Hisoblash</button>
+    <div class="res-box" id="bju-res">
+      <div class="g4" style="margin-bottom:12px">
+        <div class="sbox"><div class="sval" id="bju-kk" style="color:var(--accent);font-size:15px">-</div><div class="slbl">Kkal</div></div>
+        <div class="sbox"><div class="sval" id="bju-b" style="color:var(--green);font-size:15px">-</div><div class="slbl">B(g)</div></div>
+        <div class="sbox"><div class="sval" id="bju-j" style="color:var(--gold);font-size:15px">-</div><div class="slbl">J(g)</div></div>
+        <div class="sbox"><div class="sval" id="bju-u" style="color:var(--accent2);font-size:15px">-</div><div class="slbl">U(g)</div></div>
+      </div>
+      <div class="info-box" id="bju-info"></div>
+      <button class="btn-blue" id="go-meal-btn" style="margin-top:12px;display:none" onclick="goMeal()">Ovqatlanish rejimini korish</button>
+    </div>
+  </div>
+</div>
+
+<!-- GORMON -->
+<div class="page" id="pg-gormon">
+  <div class="sec-title">🧪 <span>Gormon Tahlillari</span></div>
+  <div class="card" style="position:relative">
+    <div class="locked-overlay" id="gorm-lock"><div class="lock-ico">🔒</div><div class="lock-txt">Premium foydalanuvchilar uchun</div><button class="lock-btn" onclick="goPage('premium')">Premium olish</button></div>
+    <div class="tab-row" id="gtabs">
+      <div class="tab-item on" onclick="gTab('as',this)">Asosiy</div>
+      <div class="tab-item" onclick="gTab('qa',this)">Qalqonsimon</div>
+      <div class="tab-item" onclick="gTab('ji',this)">Jinsiy</div>
+      <div class="tab-item" onclick="gTab('st',this)">Stress</div>
+    </div>
+    <div id="gorm-list"></div>
+  </div>
+</div>
+
+<!-- OVQAT -->
+<div class="page" id="pg-ovqat">
+  <div class="sec-title">🥗 <span>Ovqatlanish Rejimi</span></div>
+  <div class="card" style="position:relative">
+    <div class="locked-overlay" id="ovqat-lock"><div class="lock-ico">🔒</div><div class="lock-txt">Premium foydalanuvchilar uchun</div><button class="lock-btn" onclick="goPage('premium')">Premium olish</button></div>
+    <div class="g3" id="ovqat-stats" style="margin-bottom:14px">
+      <div class="sbox"><div class="sval" style="color:var(--accent);font-size:16px" id="ov-kk">1200</div><div class="slbl">Kkal</div></div>
+      <div class="sbox"><div class="sval" style="color:var(--green);font-size:16px" id="ov-b">114g</div><div class="slbl">Belok</div></div>
+      <div class="sbox"><div class="sval" style="color:var(--gold);font-size:13px" id="ov-maq">Kamaytirish</div><div class="slbl">Maqsad</div></div>
+    </div>
+    <div id="meal-list"></div>
+    <div class="info-box">Kuniga 2 litr suv · Shakar yoq · 19:00 dan keyin ovqat yoq</div>
+  </div>
+</div>
+
+<!-- VITAMIN -->
+<div class="page" id="pg-vitamin">
+  <div class="sec-title">💊 <span>Vitaminlar</span></div>
+  <div class="card" style="position:relative">
+    <div class="locked-overlay" id="vit-lock"><div class="lock-ico">🔒</div><div class="lock-txt">Premium foydalanuvchilar uchun</div><button class="lock-btn" onclick="goPage('premium')">Premium olish</button></div>
+    <div class="tab-row">
+      <div class="tab-item on" onclick="vitTab('gor',this)">Gormonlar uchun</div>
+      <div class="tab-item" onclick="vitTab('um',this)">Umumiy soglik</div>
+    </div>
+    <div id="vit-list"></div>
+  </div>
+</div>
+
+<!-- SPORT -->
+<div class="page" id="pg-sport">
+  <div class="sec-title">🏋️ <span>Sport Qoshimchalari</span></div>
+  <div class="card" style="position:relative">
+    <div class="locked-overlay" id="sport-lock"><div class="lock-ico">🔒</div><div class="lock-txt">Premium foydalanuvchilar uchun</div><button class="lock-btn" onclick="goPage('premium')">Premium olish</button></div>
+    <div class="tab-row">
+      <div class="tab-item on" onclick="sportTab('yoq',this)">Yog yoqish</div>
+      <div class="tab-item" onclick="sportTab('ol',this)">Vazn olish</div>
+    </div>
+    <div id="sport-list"></div>
+  </div>
+</div>
+
+<!-- QADAM -->
+<div class="page" id="pg-qadam">
+  <div class="sec-title">👣 <span>Kunlik Qadam</span></div>
+  <div class="card" style="position:relative">
+    <div class="locked-overlay" id="qadam-lock"><div class="lock-ico">🔒</div><div class="lock-txt">Premium foydalanuvchilar uchun</div><button class="lock-btn" onclick="goPage('premium')">Premium olish</button></div>
+    <div class="step-circ" id="scirc">
+      <div class="step-inner">
+        <div class="step-num" id="snum">0</div>
+        <div class="step-sub">/ 12,000</div>
+      </div>
+    </div>
+    <div class="igroup"><div class="ilbl">Bugungi qadam soni</div><input type="number" class="ifield" id="qadam-inp" placeholder="5000" oninput="updateSteps()"></div>
+    <div class="g2" style="margin-bottom:12px">
+      <div class="sbox"><div class="sval" id="q-kkal" style="color:var(--green)">0</div><div class="slbl">Yoqilgan kkal</div></div>
+      <div class="sbox"><div class="sval" id="q-km" style="color:var(--accent)">0.0</div><div class="slbl">Km masofa</div></div>
+    </div>
+    <div class="hrow"><div class="hdot" style="background:var(--gold)"></div><div><div class="hnm">Ertalabki yurish</div><div class="hdesc">07:00-08:00 · 3,000 qadam</div></div><div class="htime">🌅</div></div>
+    <div class="hrow"><div class="hdot" style="background:var(--accent)"></div><div><div class="hnm">Tushlik yurish</div><div class="hdesc">13:00-13:30 · 3,000 qadam</div></div><div class="htime">☀️</div></div>
+    <div class="hrow"><div class="hdot" style="background:var(--green)"></div><div><div class="hnm">Kechki yurish</div><div class="hdesc">18:00-19:00 · 6,000 qadam</div></div><div class="htime">🌆</div></div>
+    <div class="info-box">12,000 qadam = ~500 kkal · Yurak sogligi yaxshilanadi</div>
+  </div>
+</div>
+
+<!-- PREMIUM -->
+<div class="page" id="pg-premium">
+  <div class="prem-hero">
+    <div class="prem-ico">⭐</div>
+    <div class="prem-title">HealthPro Premium</div>
+    <div class="prem-sub">Soglik va vazn boshqaruvining eng toliq tizimi</div>
+  </div>
+  <div class="price-box">
+    <div class="price-old">199,000 som/oy</div>
+    <div class="price-amt">99,000</div>
+    <div class="price-per">som / oyiga</div>
+  </div>
+  <div class="feat-item"><span class="feat-chk">✅</span> BMI va BMR hisoblash</div>
+  <div class="feat-item"><span class="feat-chk">✅</span> BJU kalkulyator (maqsadga qarab)</div>
+  <div class="feat-item"><span class="feat-chk">✅</span> Gormon tahlillari bolimi</div>
+  <div class="feat-item"><span class="feat-chk">✅</span> Shaxsiy ovqatlanish rejimi</div>
+  <div class="feat-item"><span class="feat-chk">✅</span> Vitaminlar va doza hisoblash</div>
+  <div class="feat-item"><span class="feat-chk">✅</span> Sport qoshimchalari tavsiyasi</div>
+  <div class="feat-item"><span class="feat-chk">✅</span> Kunlik qadam hisoblagich</div>
+  <div class="feat-item"><span class="feat-chk">✅</span> UZ / RU tili</div>
+  <button class="btn-gold" style="margin-top:16px" onclick="activatePrem()">Premium Faollashtirish</button>
+  <div class="warn2">To'lov tizimi: Payme orqali. Istalgan vaqt bekor qilish mumkin.</div>
+</div>
+
+<!-- REYTING -->
+<div class="page" id="pg-reyting">
+  <div class="sec-title">⭐ <span>Baho va Fikrlar</span></div>
+
+  <div class="card" style="text-align:center;padding:24px">
+    <div style="font-size:48px;margin-bottom:12px">💬</div>
+    <div style="font-size:18px;font-weight:800;margin-bottom:8px">Fikringiz muhim!</div>
+    <div style="font-size:13px;color:var(--text2);margin-bottom:20px">AppR ni yaxshilash uchun bahongizni qoldiring</div>
+
+    <div style="margin-bottom:20px">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:10px">Umumiy baho:</div>
+      <div style="display:flex;justify-content:center;gap:10px;font-size:36px" id="stars-row">
+        <span onclick="setStar(1)" id="s1" style="cursor:pointer;opacity:0.3">★</span>
+        <span onclick="setStar(2)" id="s2" style="cursor:pointer;opacity:0.3">★</span>
+        <span onclick="setStar(3)" id="s3" style="cursor:pointer;opacity:0.3">★</span>
+        <span onclick="setStar(4)" id="s4" style="cursor:pointer;opacity:0.3">★</span>
+        <span onclick="setStar(5)" id="s5" style="cursor:pointer;opacity:0.3">★</span>
+      </div>
+      <div id="star-lbl" style="font-size:12px;color:var(--gold);margin-top:6px;height:16px"></div>
+    </div>
+
+    <div style="margin-bottom:12px">
+      <div class="igroup" style="margin-bottom:10px">
+        <div class="ilbl">Ismingiz (ixtiyoriy)</div>
+        <input type="text" class="ifield" id="rev-ism" placeholder="Masalan: Aziz T.">
+      </div>
+      <div class="igroup" style="margin-bottom:0">
+        <div class="ilbl">Fikringiz</div>
+        <textarea class="ifield" id="rev-fikr" placeholder="App haqida fikringizni yozing..." rows="3" style="resize:none;font-family:inherit"></textarea>
+      </div>
+    </div>
+    <button class="btn-gold" onclick="openForm()" style="margin-bottom:8px">Yuborish</button>
+  </div>
+
+  <div class="card">
+    <div style="font-size:14px;font-weight:700;margin-bottom:14px">📊 Foydalanuvchilar bahosi</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+      <div style="font-size:48px;font-weight:900;color:var(--gold)">4.8</div>
+      <div>
+        <div style="color:var(--gold);font-size:20px">★★★★★</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:4px">124 ta baho</div>
+      </div>
+    </div>
+    <div id="rating-bars"></div>
+  </div>
+
+  <div class="card">
+    <div style="font-size:14px;font-weight:700;margin-bottom:14px">💬 So'nggi fikrlar</div>
+    <div id="reviews-list"></div>
+  </div>
+</div>
+
+<!-- ADMIN PAGE -->
+<div class="page" id="pg-admin">
+  <div class="sec-title">🔐 <span>Admin Panel</span></div>
+
+  <div class="card" id="admin-login-card">
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:40px;margin-bottom:8px">🔒</div>
+      <div style="font-size:15px;font-weight:700">Admin kirish</div>
+      <div style="font-size:12px;color:var(--text2);margin-top:4px">Faqat administrator uchun</div>
+    </div>
+    <div class="igroup"><div class="ilbl">Parol</div>
+      <input type="password" class="ifield" id="admin-pass" placeholder="Parolni kiriting">
+    </div>
+    <button class="btn-blue" onclick="adminLogin()">Kirish</button>
+  </div>
+
+  <div id="admin-panel" style="display:none">
+    <div class="g2" style="margin-bottom:12px">
+      <div class="sbox" style="background:linear-gradient(135deg,#0f2540,#1a3a5c)">
+        <div class="sval" id="adm-total" style="color:var(--accent)">0</div>
+        <div class="slbl">Jami foydalanuvchi</div>
+      </div>
+      <div class="sbox" style="background:linear-gradient(135deg,#1a0a00,#2d1500)">
+        <div class="sval" id="adm-prem" style="color:var(--gold)">0</div>
+        <div class="slbl">Premium mijozlar</div>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:12px">
+      <div class="sbox">
+        <div class="sval" id="adm-rev" style="color:var(--green)">0</div>
+        <div class="slbl">Fikrlar soni</div>
+      </div>
+      <div class="sbox">
+        <div class="sval" id="adm-avg" style="color:var(--gold)">0.0</div>
+        <div class="slbl">O'rtacha baho</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">💬 So'nggi fikrlar</div>
+      <div id="adm-reviews"></div>
+    </div>
+
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">👥 Ro'yxatdan o'tganlar</div>
+      <div id="adm-users"></div>
+    </div>
+
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;margin-bottom:12px">⚙️ Sozlamalar</div>
+      <div class="igroup">
+        <div class="ilbl">Premium narxi (so'm)</div>
+        <input type="number" class="ifield" id="adm-price" value="99000">
+      </div>
+      <div class="igroup">
+        <div class="ilbl">Bot Token</div>
+        <input type="text" class="ifield" id="adm-token" placeholder="Telegram bot token">
+      </div>
+      <button class="btn-blue" onclick="saveAdminSettings()">Saqlash</button>
+    </div>
+
+    <button class="btn-blue" style="margin-top:12px;background:linear-gradient(135deg,#ef4444,#b91c1c)" onclick="adminLogout()">Chiqish</button>
+  </div>
+</div>
+
+</div><!-- /content -->
+
+<nav class="bottom-nav">
+  <button class="nav-btn on" id="nb-home" onclick="goPage('home')"><span class="nav-icon">🏠</span>Bosh</button>
+  <button class="nav-btn" id="nb-bmi" onclick="goPage('bmi')"><span class="nav-icon">📊</span>Yog</button>
+  <button class="nav-btn" id="nb-vitamin" onclick="goPage('vitamin')"><span class="nav-icon">💊</span>Vitamin</button>
+  <button class="nav-btn" id="nb-sport" onclick="goPage('sport')"><span class="nav-icon">🏋️</span>Sport</button>
+  <button class="nav-btn" id="nb-premium" onclick="goPage('premium')"><span class="nav-icon">⭐</span>Premium</button>
+  <button class="nav-btn" id="nb-reyting" onclick="goPage('reyting')"><span class="nav-icon">⭐</span>Baho</button>
+</nav>
+
+<script>
+if (window.Telegram && window.Telegram.WebApp) { Telegram.WebApp.ready(); Telegram.WebApp.expand(); }
+
+var lang = 'uz';
+var isPrem = false;
+var userData = {};
+var openSupp = -1;
+var openMeal = -1;
+
+function setLang(l) {
+  lang = l;
+  document.getElementById('lbuz').className = l === 'uz' ? 'lang-btn on' : 'lang-btn';
+  document.getElementById('lbru').className = l === 'ru' ? 'lang-btn on' : 'lang-btn';
+}
+
+function goPage(name) {
+  var pages = ['home','bmi','bju','gormon','ovqat','vitamin','sport','qadam','premium','reyting','admin'];
+  var navs = ['home','bmi','vitamin','sport','premium','reyting'];
+  for (var i = 0; i < pages.length; i++) {
+    var el = document.getElementById('pg-' + pages[i]);
+    if (el) el.className = 'page';
+  }
+  for (var j = 0; j < navs.length; j++) {
+    var nb = document.getElementById('nb-' + navs[j]);
+    if (nb) nb.className = 'nav-btn';
+  }
+  var pg = document.getElementById('pg-' + name);
+  if (pg) pg.className = 'page on';
+  var nb2 = document.getElementById('nb-' + name);
+  if (nb2) nb2.className = 'nav-btn on';
+  window.scrollTo(0, 0);
+  if (name === 'gormon') renderGormon('as');
+  if (name === 'vitamin') renderVit('gor');
+  if (name === 'sport') renderSport('yoq');
+  if (name === 'ovqat') renderMeals();
+}
+
+function toggleMaqFields() {
+  var v = document.getElementById('bju-maq').value;
+  document.getElementById('maq-fields').style.display = v === 'ush' ? 'none' : 'block';
+}
+
+function toggleDumba() {
+  var jins = document.getElementById('b-jins').value;
+  document.getElementById('dumba-group').style.display = jins === 'a' ? 'block' : 'none';
+}
+
+function calcYog() {
+  var yosh = parseFloat(document.getElementById('b-yosh').value);
+  var vazn = parseFloat(document.getElementById('b-vazn').value);
+  var boy = parseFloat(document.getElementById('b-boy').value);
+  var jins = document.getElementById('b-jins').value;
+  var bel = parseFloat(document.getElementById('b-bel').value);
+  var boyin = parseFloat(document.getElementById('b-boyin').value);
+  var dumba = parseFloat(document.getElementById('b-dumba').value) || 0;
+
+  if (!yosh || !vazn || !boy || !bel || !boyin) { alert('Iltimos, barcha maydonlarni tolidiring!'); return; }
+  if (jins === 'a' && !dumba) { alert('Ayollar uchun dumba aylanasini kiriting!'); return; }
+
+  // US Navy formula
+  var yogF;
+  if (jins === 'e') {
+    yogF = 495 / (1.0324 - 0.19077 * Math.log10(bel - boyin) + 0.15456 * Math.log10(boy)) - 450;
+  } else {
+    yogF = 495 / (1.29579 - 0.35004 * Math.log10(bel + dumba - boyin) + 0.22100 * Math.log10(boy)) - 450;
+  }
+  yogF = Math.max(3, Math.min(60, yogF));
+  var yogFStr = yogF.toFixed(1);
+
+  // Status
+  var st, col, adv;
+  if (jins === 'e') {
+    if (yogF < 6) { st = 'Minimal (sport)'; col = '#00d4ff'; adv = 'Bu daraja faqat professional sportchilar uchun. Sogliq uchun xavfli bolishi mumkin.'; }
+    else if (yogF < 14) { st = 'Sport darajasi'; col = '#10b981'; adv = 'Ajoyib natija! Sport darajasidagi tana tarkibi.'; }
+    else if (yogF < 18) { st = 'Maqbul'; col = '#10b981'; adv = 'Yaxshi natija. Soglom tana tarkibi.'; }
+    else if (yogF < 25) { st = 'Normal'; col = '#f59e0b'; adv = 'Normal daraja. Faollikni oshirish tavsiya etiladi.'; }
+    else { st = 'Yuqori'; col = '#ef4444'; adv = 'Yog foizi yuqori. Shifokor nazoratida kamaytirishni boshlang.'; }
+  } else {
+    if (yogF < 14) { st = 'Minimal'; col = '#00d4ff'; adv = 'Juda past. Sogliq uchun xavfli bolishi mumkin.'; }
+    else if (yogF < 21) { st = 'Sport darajasi'; col = '#10b981'; adv = 'Ajoyib! Sport darajasidagi tana tarkibi.'; }
+    else if (yogF < 25) { st = 'Maqbul'; col = '#10b981'; adv = 'Yaxshi natija. Soglom tana tarkibi.'; }
+    else if (yogF < 32) { st = 'Normal'; col = '#f59e0b'; adv = 'Normal daraja. Faollikni oshirish foydali.'; }
+    else { st = 'Yuqori'; col = '#ef4444'; adv = 'Yog foizi yuqori. Shifokor bilan maslahatlashing.'; }
+  }
+
+  var yogKg = (vazn * yogF / 100).toFixed(1);
+  var musakKg = (vazn - parseFloat(yogKg)).toFixed(1);
+  var bmr = jins === 'e' ? Math.round(10*vazn + 6.25*boy - 5*yosh + 5) : Math.round(10*vazn + 6.25*boy - 5*yosh - 161);
+  var idealYog = jins === 'e' ? 15 : 22;
+  var idealVazn = Math.round(parseFloat(musakKg) / (1 - idealYog/100));
+
+  userData = { vazn: vazn, boy: boy, yosh: yosh, jins: jins, bmr: bmr, yogF: yogF, yogKg: yogKg, musakKg: musakKg };
+
+  // Update circle
+  var pct = Math.min(yogF / 50, 1);
+  var offset = 377 - (377 * pct);
+  var circ = document.getElementById('yog-circle');
+  if (circ) { circ.style.stroke = col; circ.setAttribute('stroke-dashoffset', offset); }
+
+  document.getElementById('bmi-val').textContent = yogFStr + '%';
+  document.getElementById('bmi-st').textContent = st;
+  document.getElementById('bmi-st').style.background = col + '22';
+  document.getElementById('bmi-st').style.color = col;
+  document.getElementById('bmr-v').textContent = bmr.toLocaleString();
+  document.getElementById('yog-kg').textContent = yogKg + ' kg';
+  document.getElementById('musak-kg').textContent = musakKg + ' kg';
+  document.getElementById('ideal-v').textContent = idealVazn + ' kg';
+  document.getElementById('bmi-adv').textContent = adv;
+
+  // Render yog bars
+  var bars = jins === 'e'
+    ? [{lb:'Minimal',from:0,to:6,col:'#00d4ff'},{lb:'Sport',from:6,to:14,col:'#10b981'},{lb:'Maqbul',from:14,to:18,col:'#10b981'},{lb:'Normal',from:18,to:25,col:'#f59e0b'},{lb:'Yuqori',from:25,to:50,col:'#ef4444'}]
+    : [{lb:'Minimal',from:0,to:14,col:'#00d4ff'},{lb:'Sport',from:14,to:21,col:'#10b981'},{lb:'Maqbul',from:21,to:25,col:'#10b981'},{lb:'Normal',from:25,to:32,col:'#f59e0b'},{lb:'Yuqori',from:32,to:50,col:'#ef4444'}];
+  var bh = '';
+  for (var i = 0; i < bars.length; i++) {
+    var b = bars[i];
+    var isActive = yogF >= b.from && yogF < b.to;
+    bh += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;' + (isActive ? 'background:' + b.col + '22;border-radius:8px;padding:4px 6px;' : 'padding:4px 6px;') + '">';
+    bh += '<div style="width:10px;height:10px;border-radius:50%;background:' + b.col + ';flex-shrink:0"></div>';
+    bh += '<span style="font-size:12px;flex:1;font-weight:' + (isActive ? '700' : '400') + ';color:' + (isActive ? b.col : 'var(--text2)') + '">' + b.lb + '</span>';
+    bh += '<span style="font-size:11px;color:var(--text2)">' + b.from + '-' + b.to + '%</span>';
+    if (isActive) bh += '<span style="font-size:11px;font-weight:700;color:' + b.col + '">Siz</span>';
+    bh += '</div>';
+  }
+  document.getElementById('yog-bars').innerHTML = bh;
+  document.getElementById('bmi-res').className = 'res-box on';
+}
+
+function calcBJU() {
+  if (!userData.bmr) { alert(lang === 'uz' ? 'Avval BMI sahifasida malumot kiriting!' : 'Snachala vvedite dannye na stranitse BMI!'); goPage('bmi'); return; }
+  var faol = parseFloat(document.getElementById('bju-faol').value);
+  var maq = document.getElementById('bju-maq').value;
+  var mvazn = parseFloat(document.getElementById('bju-mvazn').value) || 0;
+  var muddat = parseInt(document.getElementById('bju-muddat').value) || 3;
+  var tdee = Math.round(userData.bmr * faol);
+  var diff = 0;
+  var info = '';
+  if (maq !== 'ush' && mvazn && muddat) {
+    var farq = userData.vazn - mvazn;
+    var kunlar = muddat * 30;
+    diff = Math.round((farq * 7700) / kunlar);
+    if (diff > 1000) diff = 1000;
+    if (diff < -1000) diff = -1000;
+    var oyKg = (farq / muddat).toFixed(1);
+    var haftKg = (farq / (muddat * 4)).toFixed(2);
+    info = 'Maqsad: ' + Math.abs(farq) + ' kg | ' + muddat + ' oy | Oyiga: ' + Math.abs(oyKg) + ' kg | Haftasiga: ' + Math.abs(haftKg) + ' kg';
+  }
+  if (maq === 'kam') tdee -= Math.abs(diff);
+  else if (maq === 'ol') tdee += Math.abs(diff);
+  var minK = userData.jins === 'a' ? 1200 : 1500;
+  if (tdee < minK) tdee = minK;
+  var b = Math.round(tdee * 0.30 / 4);
+  var j = Math.round(tdee * 0.25 / 9);
+  var u = Math.round(tdee * 0.45 / 4);
+  document.getElementById('bju-kk').textContent = tdee;
+  document.getElementById('bju-b').textContent = b;
+  document.getElementById('bju-j').textContent = j;
+  document.getElementById('bju-u').textContent = u;
+  document.getElementById('bju-info').textContent = info;
+  document.getElementById('bju-res').className = 'res-box on';
+  document.getElementById('go-meal-btn').style.display = 'block';
+  userData.tdee = tdee; userData.b_g = b; userData.j_g = j; userData.u_g = u; userData.maq = maq;
+}
+
+function goMeal() { renderMeals(); goPage('ovqat'); }
+
+var GORMON = {
+  as: [
+    {nm:'TSH, T3, T4', desc:'Qalqonsimon bez faoliyati', t:'08:00-09:00', col:'#00d4ff', star:true},
+    {nm:'Insulin + Glyukoza', desc:'HbA1c, HOMA-IR', t:'Och qoringa', col:'#10b981', star:true},
+    {nm:'Kortizol', desc:'Stress gormoni', t:'08:00-09:00', col:'#f59e0b', star:true},
+    {nm:'Leptin / Ghrelin', desc:"To'yinish va ochlik", t:'Ertalab', col:'#7c3aed', star:false}
+  ],
+  qa: [
+    {nm:'TSH', desc:'Asosiy korsatkich', t:'08:00-09:00', col:'#00d4ff', star:true},
+    {nm:'T3 (erkin)', desc:'Faol gormon', t:'Och qoringa', col:'#10b981', star:true},
+    {nm:'T4 (erkin)', desc:'Asosiy gormon', t:'Och qoringa', col:'#10b981', star:true},
+    {nm:'Anti-TPO', desc:'Autoimmun tekshiruv', t:'Istalgan', col:'#f59e0b', star:false}
+  ],
+  ji: [
+    {nm:'Testosterone', desc:'Erkaklik gormoni', t:'07:00-10:00', col:'#7c3aed', star:true},
+    {nm:'LH, FSH', desc:'Gipofiz gormonlari', t:'Och qoringa', col:'#f59e0b', star:true},
+    {nm:'DHEA-S', desc:'Buyrak usti bezi', t:'Ertalab', col:'#00d4ff', star:false},
+    {nm:'Estradiol (E2)', desc:'Ayollik gormoni', t:'Tsikl 3-5 kun', col:'#ef4444', star:false}
+  ],
+  st: [
+    {nm:'Kortizol (qon)', desc:'Ertalab tekin', t:'08:00-09:00', col:'#f59e0b', star:true},
+    {nm:'Kortizol (siydik)', desc:'24 soatlik', t:'Kun boyi', col:'#f59e0b', star:false},
+    {nm:'ACTH', desc:'Kortikotropin', t:'08:00-09:00', col:'#ef4444', star:true},
+    {nm:'Adrenalin', desc:'Stress javobi', t:'Siydikda', col:'#ef4444', star:false}
+  ]
+};
+
+function renderGormon(tab) {
+  var data = GORMON[tab] || GORMON['as'];
+  var h = '';
+  for (var i = 0; i < data.length; i++) {
+    var d = data[i];
+    h += '<div class="hrow">';
+    h += '<div class="hdot" style="background:' + d.col + '"></div>';
+    h += '<div style="flex:1"><div class="hnm">' + (d.star ? '* ' : '') + d.nm + '</div><div class="hdesc">' + d.desc + '</div></div>';
+    h += '<div class="htime">' + d.t + '</div></div>';
+  }
+  h += '<div class="info-box">* - Birinchi navbatda topshirish kerak</div>';
+  document.getElementById('gorm-list').innerHTML = h;
+}
+
+function gTab(tab, el) {
+  var tabs = document.getElementById('gtabs').children;
+  for (var i = 0; i < tabs.length; i++) tabs[i].className = 'tab-item';
+  el.className = 'tab-item on';
+  renderGormon(tab);
+}
+
+var VITS = {
+  gor: [
+    {ico:'🟡', nm:'D3 Vitamini', sb:'Gormonlar muvozanati', bg:'#1a150a', det:[['Doza','2000-5000 IU / kun'],['Vaqt','Ertalab ovqat bilan'],['Brend','Now Foods D3, Solgar'],['Davomiylik','3 oy, keyin tahlil']], warn:'Shifokor ruxsatisiz 5000 IUdan kop ichmang'},
+    {ico:'⚡', nm:'Magnesiy B6', sb:'Kortizolni pasaytiradi', bg:'#0a1020', det:[['Doza','300-400 mg / kun'],['Vaqt','Kechqurun uxlashdan oldin'],['Brend','Magnesium Malate, Glycinate'],['Foyda','Uyqu, stressga chidamlilik']], warn:null},
+    {ico:'🔵', nm:'Yod + Selenium', sb:'Qalqonsimon bez', bg:'#0a1520', det:[['Yod','150-200 mkg / kun'],['Selenium','50-100 mkg / kun'],['Vaqt','Ertalab ovqat bilan'],['Brend','Thorne, Now Foods']], warn:'TSH tahlilisiz yod ichmang'},
+    {ico:'🟤', nm:'Omega-3', sb:'Yalliglanishni kamaytiradi', bg:'#0f1a0a', det:[['Doza','2-3 g EPA+DHA / kun'],['Vaqt','Ovqat bilan'],['Brend','Carlson Labs, Now Foods Ultra'],['Foyda','Yurak, miya, gormonlar']], warn:null}
+  ],
+  um: [
+    {ico:'🟠', nm:'C Vitamini', sb:'Immunitet kuchaytiradi', bg:'#1a0a00', det:[['Doza','500-1000 mg / kun'],['Vaqt','Ovqat bilan, 2 marta'],['Brend','Now Foods, Solgar, Ester-C']], warn:null},
+    {ico:'🔴', nm:'Koenzim Q10', sb:'Energiya va yurak', bg:'#1a0505', det:[['Doza','100-200 mg / kun'],['Vaqt','Ertalab ovqat bilan'],['Brend','Jarrow Ubiquinol'],['Foyda','40+ yoshda juda muhim']], warn:null},
+    {ico:'🟢', nm:'B12 Vitamini', sb:'Energiya va asab', bg:'#0a1a05', det:[['Doza','1000 mkg / kun'],['Shakl','Methylcobalamin'],['Vaqt','Ertalab och qoringa'],['Brend','Solgar, Jarrow Methyl B12']], warn:null},
+    {ico:'⬜', nm:'Zinc (Rux)', sb:'Testosterone va immunitet', bg:'#0f0f1a', det:[['Doza','15-30 mg / kun'],['Vaqt','Kechqurun ovqat bilan'],['Brend','Now Foods Zinc Picolinate'],['Eslatma','Mis bilan birga ichmang']], warn:'40 mgdan kop ichmang - toksik'}
+  ]
+};
+
+var openVit = -1;
+function renderVit(tab) {
+  var data = VITS[tab];
+  var h = '';
+  for (var i = 0; i < data.length; i++) {
+    var v = data[i];
+    var rows = '';
+    for (var k = 0; k < v.det.length; k++) rows += '<div class="drow"><span class="dkey">' + v.det[k][0] + '</span><span class="dval">' + v.det[k][1] + '</span></div>';
+    var wh = v.warn ? '<div class="warn-box">! ' + v.warn + '</div>' : '';
+    h += '<div class="supp-card"><div class="supp-hdr" onclick="tvit(' + i + ')">';
+    h += '<div class="supp-ico" style="background:' + v.bg + '">' + v.ico + '</div>';
+    h += '<div style="flex:1"><div class="supp-nm">' + v.nm + '</div><div class="supp-sb">' + v.sb + '</div></div>';
+    h += '<span id="va' + i + '">v</span></div>';
+    h += '<div class="supp-det" id="vd' + i + '">' + rows + wh + '<div class="info-box">Shifokor bilan maslahatlashing</div></div></div>';
+  }
+  document.getElementById('vit-list').innerHTML = h;
+  openVit = -1;
+}
+
+function tvit(i) {
+  var d = document.getElementById('vd' + i);
+  var a = document.getElementById('va' + i);
+  if (!d || !a) return;
+  if (openVit === i) { d.className = 'supp-det'; a.textContent = 'v'; openVit = -1; }
+  else {
+    if (openVit >= 0) { var od = document.getElementById('vd' + openVit); var oa = document.getElementById('va' + openVit); if(od) od.className='supp-det'; if(oa) oa.textContent='v'; }
+    d.className = 'supp-det on'; a.textContent = '^'; openVit = i;
+  }
+}
+
+function vitTab(tab, el) {
+  var tabs = el.parentElement.children;
+  for (var i = 0; i < tabs.length; i++) tabs[i].className = 'tab-item';
+  el.className = 'tab-item on';
+  renderVit(tab);
+}
+
+var SPORTS = {
+  yoq: [
+    {ico:'🔥', nm:'L-Karnitin', sb:"Yog'ni energiyaga aylantiradi", bg:'#1a0505', det:[['Doza','1500-2000 mg / kun'],['Vaqt','Mashqdan 30 daq oldin'],['Shakl','Suyuq yoki kapsulada'],['Brend','Now Foods, Jarrow, Biotech'],['Natija','3-4 haftada seziladi']], warn:null},
+    {ico:'🍵', nm:'Green Tea Extract', sb:'Moddalar almashinuvini tezlatadi', bg:'#0a1505', det:[['Doza','400-500 mg EGCG / kun'],['Vaqt','Ertalab va tushlik oldida'],['Brend','Now Foods, Jarrow, Solgar']], warn:'Uxlashdan 6 soat oldin ichmang'},
+    {ico:'💪', nm:'Whey Protein Izolyat', sb:"Mushakni saqlaydi, ishtahani kamaytiradi", bg:'#0a0f1a', det:[['Doza','25-30 g / porsiya'],['Vaqt','Mashqdan keyin yoki nonushta'],['Shakl','Isolate (laktoza yoq)'],['Brend','Optimum Nutrition, Dymatize ISO100'],['Kaloriya','~110 kkal / porsiya']], warn:null},
+    {ico:'🌊', nm:'CLA (Linol kislota)', sb:"Qorin yog'ini kamaytiradi", bg:'#0a1520', det:[['Doza','3-4 g / kun (3 marta)'],['Vaqt','Ovqat bilan'],['Brend','Now Foods CLA, Tonalin'],['Davomiylik','Kamida 3 oy']], warn:null},
+    {ico:'⚡', nm:'Kofein + L-Teanin', sb:'Energiya va konsentratsiya', bg:'#1a1505', det:[['Kofein','100-200 mg'],['L-Teanin','200 mg (2:1 nisbat)'],['Vaqt','Ertalab yoki mashqdan oldin'],['Brend','Now Foods, Jarrow']], warn:'Uxlashdan 8 soat oldin ichmang'}
+  ],
+  ol: [
+    {ico:'⚗️', nm:'Kreatin Monohydrate', sb:"Kuch va mushak uchun #1", bg:'#0a0f1a', det:[['Doza','3-5 g / kun (har kuni)'],['Vaqt','Mashqdan keyin suv bilan'],['Shakl','Monohydrate (eng yaxshi)'],['Brend','Now Foods, Optimum Nutrition'],['Suv','Kuniga 3 litr ichish shart']], warn:null},
+    {ico:'🥛', nm:'Mass Gainer', sb:'Kaloriya va protein', bg:'#0a1a05', det:[['Doza','1-2 porsiya / kun'],['Kaloriya','~600-1200 kkal / porsiya'],['Protein','~40-60 g / porsiya'],['Vaqt','Mashqdan keyin yoki kechqurun'],['Brend','Serious Mass, True Mass']], warn:"Yog' kop bolsa ichmang - Whey tanlang"},
+    {ico:'💥', nm:'BCAA', sb:"Mushak yo'qotishini oldini oladi", bg:'#150a1a', det:[['Doza','5-10 g / kun'],['Nisbat','Leucine:Isoleucine:Valine = 2:1:1'],['Vaqt','Mashq davomida yoki keyin'],['Brend','Now Foods BCAA, Scivation Xtend']], warn:null},
+    {ico:'🔋', nm:'Beta-Alanin', sb:'Chidamlilik va kuch', bg:'#1a0a05', det:[['Doza','3-6 g / kun'],['Vaqt','Mashqdan 30 daq oldin'],['Brend','Now Foods, Jarrow, Optimum'],['Yon tasir','Teri qichishi - normal']], warn:null},
+    {ico:'🧪', nm:'ZMA (Zinc+Magnesiy+B6)', sb:'Testosterone va tiklash', bg:'#0f0f1a', det:[['Doza','3 kapsul / kechqurun'],['Vaqt','Uxlashdan 30-60 daq oldin'],['Brend','Now Foods ZMA, Optimum ZMA'],['Foyda','Uyqu sifati, testosterone']], warn:null}
+  ]
+};
+
+var openSport = -1;
+function renderSport(tab) {
+  var data = SPORTS[tab];
+  var h = '';
+  for (var i = 0; i < data.length; i++) {
+    var s = data[i];
+    var rows = '';
+    for (var k = 0; k < s.det.length; k++) rows += '<div class="drow"><span class="dkey">' + s.det[k][0] + '</span><span class="dval">' + s.det[k][1] + '</span></div>';
+    var wh = s.warn ? '<div class="warn-box">! ' + s.warn + '</div>' : '';
+    h += '<div class="supp-card"><div class="supp-hdr" onclick="tsp(' + i + ')">';
+    h += '<div class="supp-ico" style="background:' + s.bg + '">' + s.ico + '</div>';
+    h += '<div style="flex:1"><div class="supp-nm">' + s.nm + '</div><div class="supp-sb">' + s.sb + '</div></div>';
+    h += '<span id="sa' + i + '">v</span></div>';
+    h += '<div class="supp-det" id="sd' + i + '">' + rows + wh + '<div class="info-box">Shifokor bilan maslahatlashing</div></div></div>';
+  }
+  document.getElementById('sport-list').innerHTML = h;
+  openSport = -1;
+}
+
+function tsp(i) {
+  var d = document.getElementById('sd' + i);
+  var a = document.getElementById('sa' + i);
+  if (!d || !a) return;
+  if (openSport === i) { d.className = 'supp-det'; a.textContent = 'v'; openSport = -1; }
+  else {
+    if (openSport >= 0) { var od = document.getElementById('sd' + openSport); var oa = document.getElementById('sa' + openSport); if(od) od.className='supp-det'; if(oa) oa.textContent='v'; }
+    d.className = 'supp-det on'; a.textContent = '^'; openSport = i;
+  }
+}
+
+function sportTab(tab, el) {
+  var tabs = el.parentElement.children;
+  for (var i = 0; i < tabs.length; i++) tabs[i].className = 'tab-item';
+  el.className = 'tab-item on';
+  renderSport(tab);
+}
+
+function getMeals(tdee, maq) {
+  var plans = {
+    kam: [
+      {vaqt:'07:00', nom:'Nonushta', r:0.14, items:[['Tuxum (qaynatilgan)','120g',156,13,11,1],['Bodring','100g',15,1,0,3],['Choy (shakarsiz)','200g',0,0,0,0]]},
+      {vaqt:'10:00', nom:'2-chi nonushta', r:0.12, items:[['Olma','150g',78,0,0,20],['Yongоq','15g',98,2,10,2]]},
+      {vaqt:'13:00', nom:'Tushlik', r:0.30, items:[["Tovuq ko'kragi",'150g',165,31,4,0],['Greчka','150g',165,6,2,31],['Sabzavot salati','150g',40,2,1,8]]},
+      {vaqt:'16:00', nom:'Kechki yengil', r:0.12, items:[['Tvorog 0-5%','200g',150,22,4,6]]},
+      {vaqt:'19:00', nom:'Kechki ovqat', r:0.21, items:[['Baliq (tilapia)','150g',135,28,3,0],['Brokkoli','150g',50,4,1,8],['Sabzi','100g',35,1,0,8]]}
+    ],
+    ush: [
+      {vaqt:'07:00', nom:'Nonushta', r:0.20, items:[['Tuxum','2 ta',156,13,11,1],["Greчka botqasi",'80g',280,8,2,56],['Choy','200g',0,0,0,0]]},
+      {vaqt:'10:00', nom:'2-chi nonushta', r:0.10, items:[['Olma','1 ta',78,0,0,20],['Yogurt','150g',90,5,3,12]]},
+      {vaqt:'13:00', nom:'Tushlik', r:0.30, items:[["Tovuq ko'kragi",'180g',200,37,5,0],['Guruch','150g',200,4,0,44],['Sabzavot','150g',40,2,1,8]]},
+      {vaqt:'16:00', nom:'Kechki yengil', r:0.10, items:[['Tvorog 5%','150g',130,18,5,4],['Banan','100g',90,1,0,23]]},
+      {vaqt:'19:00', nom:'Kechki ovqat', r:0.25, items:[['Baliq','200g',180,36,4,0],['Kartoshka','150g',120,3,0,27],['Sabzavot','150g',40,2,1,8]]}
+    ],
+    ol: [
+      {vaqt:'07:00', nom:'Nonushta', r:0.22, items:[['Tuxum','3 ta',234,20,16,2],["Suli botqasi",'100g',370,13,7,60],['Banan','1 ta',90,1,0,23],['Sut','200g',120,6,7,10]]},
+      {vaqt:'10:00', nom:'2-chi nonushta', r:0.12, items:[['Whey protein','1 porsiya',120,25,2,5],['Olma','1 ta',78,0,0,20]]},
+      {vaqt:'13:00', nom:'Tushlik', r:0.28, items:[["Tovuq ko'kragi",'250g',275,52,6,0],['Guruch','200g',260,5,1,58],['Sabzavot','150g',40,2,1,8]]},
+      {vaqt:'16:00', nom:'Pre-workout', r:0.10, items:[['Tvorog 5%','200g',174,24,7,6],["Yongоq",'30g',196,5,19,4]]},
+      {vaqt:'19:00', nom:'Kechki ovqat', r:0.22, items:[["Mol go'shti",'200g',250,32,12,0],['Kartoshka','200g',160,4,0,36],['Sabzavot','150g',40,2,1,8]]},
+      {vaqt:'21:00', nom:'Kech snack', r:0.06, items:[['Kazein / Tvorog','250g',200,30,5,8]]}
+    ]
+  };
+  var plan = plans[maq] || plans['kam'];
+  var result = [];
+  for (var i = 0; i < plan.length; i++) {
+    var m = plan[i];
+    var kkal = Math.round(tdee * m.r);
+    var bSum = 0, jSum = 0, uSum = 0;
+    for (var k = 0; k < m.items.length; k++) { bSum += m.items[k][3]; jSum += m.items[k][4]; uSum += m.items[k][5]; }
+    result.push({vaqt: m.vaqt, nom: m.nom, kkal: kkal, b: bSum, j: jSum, u: uSum, items: m.items});
+  }
+  return result;
+}
+
+function renderMeals() {
+  var tdee = userData.tdee || 1200;
+  var maq = userData.maq || 'kam';
+  var meals = getMeals(tdee, maq);
+  var totalKk = 0, totalB = 0;
+  for (var i = 0; i < meals.length; i++) { totalKk += meals[i].kkal; totalB += meals[i].b; }
+  var maqLbl = maq === 'kam' ? 'Kamaytirish' : maq === 'ol' ? 'Vazn olish' : 'Saqlash';
+  document.getElementById('ov-kk').textContent = tdee;
+  document.getElementById('ov-b').textContent = totalB + 'g';
+  document.getElementById('ov-maq').textContent = maqLbl;
+  var h = '';
+  for (var i = 0; i < meals.length; i++) {
+    var m = meals[i];
+    var rows = '';
+    for (var k = 0; k < m.items.length; k++) {
+      var it = m.items[k];
+      rows += '<tr><td>' + it[0] + '</td><td>' + it[1] + '</td><td>' + it[2] + '</td><td>' + it[3] + '</td><td>' + it[4] + '</td><td>' + it[5] + '</td></tr>';
+    }
+    rows += '<tr><td><b>Jami</b></td><td>-</td><td><b>' + m.kkal + '</b></td><td><b>' + m.b + '</b></td><td><b>' + m.j + '</b></td><td><b>' + m.u + '</b></td></tr>';
+    h += '<div class="meal-card"><div class="meal-hdr" onclick="tmeal(' + i + ')">';
+    h += '<div class="meal-time">' + m.vaqt + '</div>';
+    h += '<div style="flex:1"><div class="meal-nm">' + m.nom + '</div>';
+    h += '<div class="macros"><span class="mac k">' + m.kkal + ' kkal</span><span class="mac b">B:' + m.b + 'g</span><span class="mac j">J:' + m.j + 'g</span><span class="mac u">U:' + m.u + 'g</span></div></div>';
+    h += '<span id="ma' + i + '">v</span></div>';
+    h += '<div class="meal-det" id="md' + i + '"><table class="mtable"><thead><tr><th style="text-align:left">Taom</th><th>g</th><th>Kkal</th><th>B</th><th>J</th><th>U</th></tr></thead><tbody>' + rows + '</tbody></table></div></div>';
+  }
+  document.getElementById('meal-list').innerHTML = h;
+  openMeal = -1;
+}
+
+function tmeal(i) {
+  var d = document.getElementById('md' + i);
+  var a = document.getElementById('ma' + i);
+  if (!d || !a) return;
+  if (openMeal === i) { d.className = 'meal-det'; a.textContent = 'v'; openMeal = -1; }
+  else {
+    if (openMeal >= 0) { var od = document.getElementById('md' + openMeal); var oa = document.getElementById('ma' + openMeal); if(od) od.className='meal-det'; if(oa) oa.textContent='v'; }
+    d.className = 'meal-det on'; a.textContent = '^'; openMeal = i;
+  }
+}
+
+function updateSteps() {
+  var s = parseInt(document.getElementById('qadam-inp').value) || 0;
+  var pct = Math.min(s / 12000, 1);
+  var deg = Math.round(pct * 360);
+  document.getElementById('scirc').style.background = 'conic-gradient(#00d4ff ' + deg + 'deg, rgba(0,212,255,0.15) ' + deg + 'deg)';
+  document.getElementById('snum').textContent = s.toLocaleString();
+  document.getElementById('q-kkal').textContent = Math.round(s * 0.04);
+  document.getElementById('q-km').textContent = (s * 0.00075).toFixed(1);
+}
+
+function activatePrem() {
+  isPrem = true;
+  var locks = ['bju-lock','gorm-lock','ovqat-lock','vit-lock','sport-lock','qadam-lock'];
+  for (var i = 0; i < locks.length; i++) {
+    var el = document.getElementById(locks[i]);
+    if (el) el.style.display = 'none';
+  }
+  document.getElementById('prembar').style.background = 'linear-gradient(135deg,#0a1a05,#1a3a05)';
+  document.getElementById('prembar').style.borderColor = '#10b981';
+  document.getElementById('pbtxt').textContent = 'Premium faol - barcha funksiyalar ochiq!';
+  document.getElementById('pbsub').textContent = 'Rahmat! Sogom hayot kechiring!';
+  document.getElementById('pbbtn').style.display = 'none';
+  alert('Premium muvaffaqiyatli faollashtirildi!');
+  goPage('home');
+}
+
+renderGormon('as');
+renderVit('gor');
+renderSport('yoq');
+renderMeals();
+
+var selStar = 0;
+var FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSdAjPH3QOVaPWYQsCwH99AXeBUtoQnAsu4ahQ_F_iQWQR1lHw/viewform';
+var SB_URL = 'https://fazfeevmivgashwwnbef.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZhemZlZXZtaXZnYXNod3duYmVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0MzUzNDYsImV4cCI6MjA5NzAxMTM0Nn0.uDxNlR7usQwg0i6ZzaCRmVuArXFoKyaakKWmvw6tmWw';
+
+function sbFetch(path, opts) {
+  var headers = {
+    'apikey': SB_KEY,
+    'Authorization': 'Bearer ' + SB_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation',
+    'Accept': 'application/json'
+  };
+  var fetchOpts = { headers: headers, mode: 'cors' };
+  if (opts && opts.method) fetchOpts.method = opts.method;
+  if (opts && opts.body) fetchOpts.body = opts.body;
+  return fetch(SB_URL + path, fetchOpts);
+}
+
+function loadReviews() {
+  // Load from localStorage
+  try {
+    var saved = localStorage.getItem('hp_reviews');
+    var localRevs = saved ? JSON.parse(saved) : [];
+    var allRevs = REVIEWS.concat(localRevs).slice(0, 20);
+    showReviewsList(allRevs);
+  } catch(e) {
+    showLocalReviews();
+  }
+}
+
+function showLocalReviews() {
+  showReviewsList(REVIEWS.map(function(r) {
+    return { ism: r.nm, baho: r.stars, fikr: r.txt, sana: r.sana };
+  }));
+}
+
+function showReviewsList(list) {
+  var rl = document.getElementById('reviews-list');
+  if (!rl) return;
+  var rh = '';
+  for (var j = 0; j < list.length; j++) {
+    var r = list[j];
+    var stars = r.stars || r.baho || 5;
+    var nm = r.nm || r.ism || 'Foydalanuvchi';
+    var sana = r.sana || r.created_at || '';
+    var st = '';
+    for (var k = 1; k <= 5; k++) st += '<span style="color:' + (k <= stars ? '#f59e0b' : 'var(--text2)') + '">★</span>';
+    rh += '<div style="padding:12px 0;border-bottom:1px solid var(--border)">';
+    rh += '<div style="display:flex;justify-content:space-between;margin-bottom:4px">';
+    rh += '<span style="font-size:13px;font-weight:700">' + nm + '</span>';
+    rh += '<span style="font-size:11px;color:var(--text2)">' + sana + '</span></div>';
+    rh += '<div style="font-size:14px;margin-bottom:4px">' + st + '</div>';
+    rh += '<div style="font-size:12px;color:var(--text2)">' + (r.fikr || r.txt || '') + '</div></div>';
+  }
+  rl.innerHTML = rh || '<div style="color:var(--text2);text-align:center;padding:20px">Hali fikrlar yoq. Birinchi boling!</div>';
+}
+var starLabels = ['', 'Yomon', 'Qoniqarli', 'Yaxshi', 'Juda yaxshi', 'Ajoyib!'];
+
+function setStar(n) {
+  selStar = n;
+  for (var i = 1; i <= 5; i++) {
+    var el = document.getElementById('s' + i);
+    if (el) { el.style.opacity = i <= n ? '1' : '0.3'; el.style.color = i <= n ? '#f59e0b' : ''; }
+  }
+  var lbl = document.getElementById('star-lbl');
+  if (lbl) lbl.textContent = starLabels[n] || '';
+}
+
+function openForm() {
+  if (selStar === 0) { alert('Avval yulduzcha baho bering!'); return; }
+  var ism = document.getElementById('rev-ism') ? document.getElementById('rev-ism').value : '';
+  var fikr = document.getElementById('rev-fikr') ? document.getElementById('rev-fikr').value : '';
+  if (!fikr) { alert('Iltimos, fikringizni yozing!'); return; }
+
+  try {
+    var saved = localStorage.getItem('hp_reviews');
+    var revs = saved ? JSON.parse(saved) : [];
+    revs.unshift({
+      ism: ism || 'Mehmon',
+      baho: selStar,
+      fikr: fikr,
+      sana: new Date().toLocaleDateString('uz-UZ')
+    });
+    if (revs.length > 50) revs = revs.slice(0, 50);
+    localStorage.setItem('hp_reviews', JSON.stringify(revs));
+    alert('Fikringiz uchun rahmat!');
+    if (document.getElementById('rev-ism')) document.getElementById('rev-ism').value = '';
+    if (document.getElementById('rev-fikr')) document.getElementById('rev-fikr').value = '';
+    setStar(0);
+    loadReviews();
+  } catch(e) {
+    alert('Fikringiz qabul qilindi! Rahmat.');
+  }
+}
+
+var REVIEWS = [
+  {nm:'Aziz T.', stars:5, txt:"Juda qulay app! Gormonlar bo'limi ayniqsa foydali.", sana:'2 kun oldin'},
+  {nm:'Malika R.', stars:5, txt:'Vitaminlar va dozalari aniq yozilgan. Rahmat!', sana:'5 kun oldin'},
+  {nm:'Jasur K.', stars:4, txt:'Ovqatlanish rejimi yaxshi. Sport qoshimchalari ham bor!', sana:'1 hafta oldin'},
+  {nm:'Nodira S.', stars:5, txt:'Premiumga arziydi. Barcha funksiyalar ishlaydi.', sana:'2 hafta oldin'},
+];
+
+var BARS = [{stars:5,pct:78},{stars:4,pct:14},{stars:3,pct:5},{stars:2,pct:2},{stars:1,pct:1}];
+
+function renderRating() {
+  var bh = '';
+  for (var i = 0; i < BARS.length; i++) {
+    var b = BARS[i];
+    bh += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">';
+    bh += '<span style="font-size:12px;color:var(--gold);min-width:20px">' + b.stars + '★</span>';
+    bh += '<div style="flex:1;background:var(--bg2);border-radius:6px;height:8px">';
+    bh += '<div style="background:var(--gold);width:' + b.pct + '%;height:8px;border-radius:6px"></div></div>';
+    bh += '<span style="font-size:11px;color:var(--text2);min-width:28px">' + b.pct + '%</span></div>';
+  }
+  var rb = document.getElementById('rating-bars');
+  if (rb) rb.innerHTML = bh;
+
+  var rh = '';
+  for (var j = 0; j < REVIEWS.length; j++) {
+    var r = REVIEWS[j];
+    var st = '';
+    for (var k = 1; k <= 5; k++) st += '<span style="color:' + (k <= r.stars ? '#f59e0b' : 'var(--text2)') + '">★</span>';
+    rh += '<div style="padding:12px 0;border-bottom:1px solid var(--border)">';
+    rh += '<div style="display:flex;justify-content:space-between;margin-bottom:4px">';
+    rh += '<span style="font-size:13px;font-weight:700">' + r.nm + '</span>';
+    rh += '<span style="font-size:11px;color:var(--text2)">' + r.sana + '</span></div>';
+    rh += '<div style="font-size:14px;margin-bottom:4px">' + st + '</div>';
+    rh += '<div style="font-size:12px;color:var(--text2)">' + r.txt + '</div></div>';
+  }
+  var rl = document.getElementById('reviews-list');
+  if (rl) rl.innerHTML = rh;
+}
+
+renderRating();
+loadReviews();
+
+var adminTapCount = 0;
+var adminTapTimer = null;
+function adminTap() {
+  adminTapCount++;
+  clearTimeout(adminTapTimer);
+  adminTapTimer = setTimeout(function() { adminTapCount = 0; }, 2000);
+  if (adminTapCount >= 5) {
+    adminTapCount = 0;
+    goPage('admin');
+  }
+}
+
+var ADMIN_PASS = 'Rasul2305';
+var isAdmin = false;
+
+function adminLogin() {
+  var p = document.getElementById('admin-pass').value;
+  if (p === ADMIN_PASS) {
+    isAdmin = true;
+    document.getElementById('admin-login-card').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    loadAdminData();
+  } else {
+    alert('Parol xato!');
+  }
+}
+
+function adminLogout() {
+  isAdmin = false;
+  document.getElementById('admin-login-card').style.display = 'block';
+  document.getElementById('admin-panel').style.display = 'none';
+  document.getElementById('admin-pass').value = '';
+}
+
+function loadAdminData() {
+  try {
+    var revs = JSON.parse(localStorage.getItem('hp_reviews') || '[]');
+    var users = JSON.parse(localStorage.getItem('hp_users') || '[]');
+    var prems = JSON.parse(localStorage.getItem('hp_premium_users') || '[]');
+
+    document.getElementById('adm-total').textContent = users.length || revs.length;
+    document.getElementById('adm-prem').textContent = prems.length;
+    document.getElementById('adm-rev').textContent = revs.length + REVIEWS.length;
+
+    var allRevs = REVIEWS.map(function(r) { return { ism: r.nm, baho: r.stars, fikr: r.txt, sana: r.sana }; }).concat(revs);
+    var avg = 0;
+    for (var i = 0; i < allRevs.length; i++) avg += (allRevs[i].baho || allRevs[i].stars || 5);
+    avg = allRevs.length ? (avg / allRevs.length).toFixed(1) : '4.8';
+    document.getElementById('adm-avg').textContent = avg;
+
+    var rh = '';
+    for (var j = 0; j < allRevs.slice(0, 10).length; j++) {
+      var r = allRevs[j];
+      var st = '';
+      for (var k = 1; k <= 5; k++) st += (k <= (r.baho||r.stars||5) ? '★' : '☆');
+      rh += '<div style="padding:10px 0;border-bottom:1px solid var(--border);font-size:12px">';
+      rh += '<div style="display:flex;justify-content:space-between"><b>' + (r.ism||r.nm||'Mehmon') + '</b><span style="color:var(--gold)">' + st + '</span></div>';
+      rh += '<div style="color:var(--text2);margin-top:3px">' + (r.fikr||r.txt||'') + '</div></div>';
+    }
+    document.getElementById('adm-reviews').innerHTML = rh || '<div style="color:var(--text2)">Hali fikr yoq</div>';
+
+    var uh = '';
+    if (prems.length) {
+      for (var m = 0; m < prems.length; m++) {
+        uh += '<div style="padding:8px 0;border-bottom:1px solid var(--border);font-size:12px">';
+        uh += '<div style="display:flex;justify-content:space-between">';
+        uh += '<span>' + (prems[m].ism || 'Foydalanuvchi ' + (m+1)) + '</span>';
+        uh += '<span style="color:var(--gold)">Premium ✅</span></div></div>';
+      }
+    } else {
+      uh = '<div style="color:var(--text2)">Premium mijozlar yoq</div>';
+    }
+    document.getElementById('adm-users').innerHTML = uh;
+
+    var savedPrice = localStorage.getItem('hp_price');
+    if (savedPrice) document.getElementById('adm-price').value = savedPrice;
+    var savedToken = localStorage.getItem('hp_bot_token');
+    if (savedToken) document.getElementById('adm-token').value = savedToken;
+
+  } catch(e) { console.log('Admin load error:', e); }
+}
+
+function saveAdminSettings() {
+  var price = document.getElementById('adm-price').value;
+  var token = document.getElementById('adm-token').value;
+  if (price) localStorage.setItem('hp_price', price);
+  if (token) localStorage.setItem('hp_bot_token', token);
+  alert('Sozlamalar saqlandi!');
+}
+</script>
+</body>
+</html>
